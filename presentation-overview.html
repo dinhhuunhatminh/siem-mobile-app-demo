@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>V2 Report Mobile App — Trình bày tổng quan</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161a21; --border:#262b35; --text:#e6e8ec;
+    --muted:#9aa3b2; --accent:#5b9dff; --accent2:#7ee2b8; --code:#1d2230;
+    --warn:#e6b455; --danger:#e2685f;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --panel:#ffffff; --border:#e3e6ea; --text:#1b1f27;
+      --muted:#5b6472; --accent:#2563eb; --accent2:#0f9d68; --code:#eef1f6;
+      --warn:#a86a00; --danger:#c23b32; }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; padding:32px 16px 100px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  h1{font-size:1.7rem;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 8px;font-size:.95rem}
+  .updated{color:var(--muted);font-size:.8rem;margin-bottom:32px}
+  .toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:14px 20px; margin-bottom:36px; font-size:.9rem;
+  }
+  .toc a{color:var(--accent); text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .toc ul{margin:6px 0; padding-left:20px}
+  .toc li > ul{margin:4px 0 10px; font-size:.88em; opacity:.85}
+  h2{
+    font-size:1.3rem;margin:44px 0 6px;padding-bottom:10px;
+    border-bottom:2px solid var(--accent);color:var(--text)
+  }
+  h2 .num{color:var(--accent);margin-right:8px}
+  h3{font-size:1.02rem;margin:22px 0 8px;color:var(--accent2)}
+  h4.subhead{font-size:1.08rem;font-weight:700;margin:20px 0 8px;color:var(--text)}
+  p{margin:8px 0}
+  ul{margin:8px 0;padding-left:20px}
+  ol{margin:8px 0;padding-left:22px}
+  li{margin:5px 0}
+  .why{color:var(--muted);font-size:.88rem}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:18px 22px; margin:14px 0;
+  }
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.9rem}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.02em}
+  code, .path{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:var(--code); padding:1px 6px; border-radius:5px; font-size:.87em;
+  }
+  .tree{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:var(--code); border:1px solid var(--border); border-radius:8px;
+    padding:16px 18px; font-size:.85rem; overflow-x:auto; white-space:pre; line-height:1.55;
+  }
+  .note{
+    border-left:3px solid var(--accent2); padding:10px 16px; background:var(--panel);
+    border-radius:0 8px 8px 0; font-size:.9rem; margin:14px 0;
+  }
+  .warn{
+    border-left:3px solid var(--warn); padding:10px 16px; background:var(--panel);
+    border-radius:0 8px 8px 0; font-size:.9rem; margin:14px 0;
+  }
+  .badge{
+    display:inline-block; font-size:.72rem; font-weight:700; letter-spacing:.03em;
+    text-transform:uppercase; padding:2px 8px; border-radius:999px; margin-left:8px;
+    vertical-align:middle;
+  }
+  .badge.done{ background:rgba(126,226,184,.15); color:var(--accent2); }
+  .badge.mock{ background:rgba(230,180,85,.15); color:var(--warn); }
+  .flow{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:var(--code); border:1px solid var(--border); border-radius:8px;
+    padding:16px 18px; font-size:.85rem; overflow-x:auto; white-space:pre; line-height:1.7;
+  }
+  .draftnote{
+    border:1px dashed var(--danger); border-radius:8px; padding:12px 16px;
+    font-size:.85rem; color:var(--danger); margin:20px 0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>V2 Report Mobile App — Trình bày tổng quan</h1>
+
+<div class="toc">
+<b>Mục lục</b>
+<ul>
+<li><a href="#p1">I — Tổng quan &amp; định hướng sản phẩm</a>
+  <ul>
+    <li><a href="#p1-1">1.1. App là gì</a></li>
+    <li><a href="#p1-2">1.2. Phạm vi chức năng đã chốt</a></li>
+    <li><a href="#p1-3">1.3. Mapping sang 4 tab hiện có</a></li>
+  </ul>
+</li>
+<li><a href="#p2">II — Kiến trúc &amp; quy trình xây dựng</a>
+  <ul>
+    <li><a href="#p2-1">2.1. Kiến trúc tổng thể — 2 project tách biệt</a></li>
+    <li><a href="#p2-1b">2.1.b. Cây thư mục gốc — toàn cảnh</a></li>
+    <li><a href="#p2-2">2.2. Tech stack đã chốt</a></li>
+    <li><a href="#p2-2b">2.2.b. Vì sao chọn từng lựa chọn</a></li>
+    <li><a href="#p2-3">2.3. Cây thư mục <code>lib/</code> — toàn bộ hiện trạng thật</a></li>
+    <li><a href="#p2-4">2.4. Vì sao không có <code>.ini</code>/<code>.config</code></a></li>
+    <li><a href="#p2-5">2.5. Pipeline xây dựng 1 feature mới</a></li>
+  </ul>
+</li>
+<li><a href="#p3">III — Các luồng dữ liệu chính</a>
+  <ul>
+    <li><a href="#p3-1">3.1. Nguyên tắc chung: 4 lớp</a></li>
+    <li><a href="#p3-2">3.2. Luồng đăng nhập</a></li>
+    <li><a href="#p3-3">3.3. Luồng xem Alerts</a></li>
+    <li><a href="#p3-4">3.4. Luồng xem Dashboards</a></li>
+  </ul>
+</li>
+<li><a href="#p4">IV — Trạng thái hiện tại</a>
+  <ul>
+    <li><a href="#p4-1">4.1. Đã xong / còn thiếu</a></li>
+    <li><a href="#p4-2">4.2. Bug phát hiện qua test thật (đã sửa)</a></li>
+  </ul>
+</li>
+<li><a href="#p5">V — Hướng dẫn chạy thử</a>
+  <ul>
+    <li><a href="#p5-1">5.1. Chạy backend</a></li>
+    <li><a href="#p5-2">5.2. Chạy app thật (Android emulator)</a></li>
+    <li><a href="#p5-3">5.3. Chạy Widgetbook</a></li>
+  </ul>
+</li>
+</ul>
+</div>
+
+<h2 id="p1"><span class="num">I.</span>Tổng quan &amp; định hướng sản phẩm</h2>
+
+<h3 id="p1-1">1.1. App là gì</h3>
+<div class="card">
+<ul>
+<li>App mobile bằng <b>Flutter</b>, build ra cả Android và iOS.</li>
+<li>Loại app: <b>quản lý thông tin nhiều hệ thống</b> (system info management) — có đăng nhập, dữ liệu lưu trên SQL online qua backend API. App <b>không</b> kết nối thẳng vào database.</li>
+<li>Định hướng sản phẩm: <b>theo mô hình Splunk Mobile</b> — app SIEM di động, tổng hợp log/cảnh báo từ nhiều nguồn để xem trên điện thoại.</li>
+</ul>
+</div>
+
+<h3 id="p1-2">1.2. Phạm vi chức năng đã chốt (không tự ý mở rộng)</h3>
+<div class="card">
+<p>Chỉ đúng 3 chức năng chính theo phạm vi Splunk Mobile thật — không thêm quản lý user, không thêm cấu hình nguồn, không thêm thao tác xử lý sâu vào hệ thống:</p>
+<table>
+<tr><th>Chức năng</th><th>Phạm vi đã chốt</th></tr>
+<tr><td><b>Dashboards</b></td><td>Chỉ <b>XEM</b> (không tạo/sửa trên app) — nhiều panel (chart/KPI/table) hiển thị dữ liệu có sẵn từ backend</td></tr>
+<tr><td><b>Alerts</b></td><td>1 alert = 1 sự kiện/log từ 1 nguồn cụ thể, nhóm hiển thị theo nguồn. Chỉ xem + lọc theo mức độ/nguồn — <b>không</b> có trạng thái đã đọc/đã xử lý (acknowledge)</td></tr>
+<tr><td><b>Search</b></td><td>Tìm kiếm đơn giản bằng từ khóa, lọc text — <b>không</b> phải tab riêng, tích hợp qua icon 🔍 trên AppBar của Alerts/Dashboards. Không có ngôn ngữ truy vấn kiểu SPL</td></tr>
+</table>
+</div>
+
+<h3 id="p1-3">1.3. Mapping sang 4 tab hiện có</h3>
+<div class="card">
+<table>
+<tr><th>Tab</th><th>Vai trò</th><th>Trạng thái</th></tr>
+<tr><td><code>Home</code></td><td>Giữ nguyên — chào user + logout, không đổi thành dashboard tổng quan</td><td><span class="badge done">Đã xong</span></td></tr>
+<tr><td><code>Alerts</code></td><td>Đúng chức năng Alerts ở 1.2</td><td><span class="badge done">Đã xong, đã nối API thật</span></td></tr>
+<tr><td><code>Dashboards</code></td><td>Đúng chức năng Dashboards ở 1.2 — tổng hợp/thống kê trên chính dữ liệu Alerts</td><td><span class="badge done">Đã xong, đã nối API thật</span></td></tr>
+<tr><td><code>Reports</code></td><td>Chưa có chức năng</td><td><span class="badge mock">Placeholder "đang phát triển"</span></td></tr>
+</table>
+<p class="why">Đây là quyết định đã <b>chốt qua thảo luận</b>, không phải suy luận từ ảnh tham khảo — đúng pipeline bắt buộc ở Phần II.5.</p>
+</div>
+
+<h2 id="p2"><span class="num">II.</span>Kiến trúc &amp; quy trình xây dựng</h2>
+
+<h3 id="p2-1">2.1. Kiến trúc tổng thể — 2 project tách biệt</h3>
+<div class="card">
+<div class="tree">D:/V2-Report/
+├── v2-mobileapp-development/   → App Flutter (Dart)
+└── v2-mobileapp-backend/       → Backend Node.js (JavaScript) — API + kết nối database</div>
+<p>App Flutter <b>không bao giờ chạm database trực tiếp</b> — mọi thao tác dữ liệu đi qua HTTP tới backend, backend là bên duy nhất có connection string tới Postgres.</p>
+<div class="flow">Flutter app  --HTTP (Dio)-->  Backend Express  --SQL (pg)-->  Postgres (Neon, online)</div>
+</div>
+
+<h3 id="p2-1b">2.1.b. Cây thư mục gốc — toàn cảnh, không chỉ riêng <code>lib/</code></h3>
+<div class="card">
+<p><b>Project Flutter</b> (<code>v2-mobileapp-development/</code>) — <code>lib/</code> là nơi viết code thật (chi tiết ở mục 2.3), các thư mục còn lại đóng vai trò hạ tầng build/native:</p>
+<div class="tree">v2-mobileapp-development/
+├── lib/                    → TOÀN BỘ code Dart (app thật + Widgetbook) — xem cây chi tiết ở 2.3
+├── android/                → project native Android do Flutter sinh sẵn — chỉ sửa khi cần
+│                              (permission, version, signing, icon), KHÔNG viết mới (quy tắc 7)
+├── ios/                    → project native iOS, tương tự android/ — Info.plist, xcconfig...
+├── test/                   → unit test/widget test (Dart)
+├── build/                  → output build (APK/IPA…), tự sinh, KHÔNG commit
+├── pubspec.yaml             → khai báo dependency + version — tương đương package.json
+├── pubspec.lock             → khóa version chính xác đã cài, đảm bảo build lại giống hệt
+├── analysis_options.yaml    → cấu hình flutter analyze (lint rules)
+├── CLAUDE.md                 → quy ước bắt buộc của project (nguồn sự thật cho kiến trúc)
+├── report.html               → giải thích chi tiết lý do từng quyết định kiến trúc
+└── project-overview.html      → trạng thái hiện tại của project (cập nhật liên tục)</div>
+<p class="why">Quy tắc 7 (CLAUDE.md): quyền/permission, tên app, icon, bundle id sửa trực tiếp trong <code>android/app/src/main/AndroidManifest.xml</code> và <code>ios/Runner/Info.plist</code> — không sửa trong <code>lib/</code>.</p>
+
+<p><b>Project backend</b> (<code>v2-mobileapp-backend/</code>) — Node.js độc lập, không nằm trong workspace Flutter:</p>
+<div class="tree">v2-mobileapp-backend/
+├── .env                    → DATABASE_URL (Neon), JWT_SECRET — KHÔNG commit git
+├── .env.example            → mẫu không chứa giá trị thật
+├── package.json             → khai báo dependency + script (migrate/dev/start/seed:alerts)
+└── src/
+    ├── server.js            → entrypoint, app.listen() trên 0.0.0.0:3000
+    ├── app.js               → khởi tạo Express, gắn middleware + route
+    ├── db/
+    │   ├── pool.js           → pg.Pool kết nối Neon qua DATABASE_URL
+    │   ├── migrate.js        → tạo bảng users + alerts (npm run migrate)
+    │   └── seed_alerts.js    → seed dữ liệu alert test (npm run seed:alerts)
+    ├── middleware/
+    │   └── authenticate.js   → verify JWT trong header Authorization
+    └── routes/
+        ├── auth.js           → POST /register, POST /login, GET /me
+        └── alerts.js          → GET /alerts (cần Bearer token)</div>
+</div>
+
+<h3 id="p2-2">2.2. Tech stack đã chốt</h3>
+<div class="card">
+<table>
+<tr><th>Hạng mục</th><th>Lựa chọn</th><th>Vai trò</th></tr>
+<tr><td>State management + DI</td><td>Riverpod (codegen)</td><td>Toàn bộ Provider dùng <code>@Riverpod</code>, không dùng <code>get_it</code></td></tr>
+<tr><td>Gọi API</td><td>Dio</td><td>HTTP client, có interceptor tự gắn Bearer token</td></tr>
+<tr><td>Local DB</td><td>Drift</td><td>Cache dữ liệu quan hệ — <span class="badge mock">chưa thêm</span>, chưa có feature cần</td></tr>
+<tr><td>Lưu token</td><td>flutter_secure_storage</td><td>Access/refresh token mã hóa trên máy</td></tr>
+<tr><td>Cấu hình/cờ đơn giản</td><td>shared_preferences</td><td><span class="badge mock">Chưa thêm</span> — chưa có nhu cầu</td></tr>
+<tr><td>Điều hướng</td><td>go_router (ghim <code>^15.x</code>)</td><td>GoRouter + redirect theo AuthState</td></tr>
+<tr><td>Xem thử component</td><td>Widgetbook</td><td>Catalog UI độc lập, tách khỏi app thật</td></tr>
+</table>
+<div class="warn"><b>Lưu ý khi trình bày:</b> <code>go_router</code> bị ghim ở <code>^15.x</code>, không tự nâng major version — bản <code>18.0.1</code> từng kéo theo package đòi <code>meta ^1.19</code>, xung đột với <code>meta 1.18.0</code> mà Flutter SDK pin cứng, gây lỗi biên dịch toàn app.</div>
+</div>
+
+<h3 id="p2-2b">2.2.b. Vì sao chọn từng lựa chọn — trả lời câu hỏi "sao không dùng X"</h3>
+<div class="card">
+<p>Mỗi hạng mục ở bảng trên giải quyết đúng 1 vấn đề cụ thể. Không chọn theo trend, mà theo bài toán thực tế app này gặp phải:</p>
+
+<h4 class="subhead">* Riverpod — quản lý state + DI trong 1 cơ chế duy nhất</h4>
+<ul>
+<li><b>Vấn đề cần giải:</b> khi dữ liệu đổi (kết quả API, trạng thái đăng nhập...), phải tự động cập nhật đúng phần UI liên quan — không gọi <code>setState</code> rải rác thủ công khắp nơi. Đồng thời cần 1 nơi cung cấp instance dùng chung (Dio, token storage...) cho nhiều màn hình mà không tạo lại.</li>
+<li><b>Vì sao Riverpod, không phải Provider/Bloc/GetX:</b> không phụ thuộc <code>BuildContext</code> (khác <code>Provider</code> gốc), bắt lỗi kiểu dữ liệu ngay lúc biên dịch nhờ code generation (<code>@riverpod</code>), và quan trọng nhất — <b>đóng luôn vai trò DI</b>. Nhờ vậy project không cần thêm <code>get_it</code> chạy song song 2 cơ chế "cung cấp instance" khác nhau — mỗi <code>Provider</code> vừa là state, vừa là nơi expose dependency.</li>
+</ul>
+<p class="why">Ví dụ thật trong app: <code>apiClientProvider</code> (core/network) tạo đúng 1 instance <code>Dio</code>, mọi datasource (auth, alerts...) <code>ref.watch</code> lấy lại đúng instance đó — không ai tự <code>Dio()</code> riêng.</p>
+
+<ul>
+<li><b>Cơ chế "tự động cập nhật" hoạt động thế nào:</b> Provider chỉ giữ 1 giá trị (<code>state</code>) và tự thông báo cho bất kỳ ai đang <code>ref.watch</code> nó khi giá trị đó đổi — không cần tự viết code "báo cho X biết". Ví dụ trong <code>AuthController</code>, chỉ cần gán <code>state = AuthAuthenticated(user)</code>; Riverpod tự lo việc <code>GoRouter</code> (qua <code>refreshListenable</code>) và mọi widget đang <code>watch</code> AuthState sẽ tự rebuild — không có dòng code nào gọi thẳng "báo cho router" hay "báo cho UI".</li>
+<li><b>Vì sao có 2 file <code>.dart</code> và <code>.g.dart</code> đi cùng cặp:</b> bạn chỉ viết 1 hàm/class bình thường kèm annotation (<code>@riverpod</code>) và dòng <code>part 'ten_file.g.dart';</code>. Chạy <code>dart run build_runner build</code> (hoặc <code>watch -d</code> để tự sinh lại mỗi lần lưu) sẽ <b>đọc cú pháp</b> (tên hàm, kiểu trả về, annotation — không đọc hiểu logic bên trong) rồi tự sinh ra file <code>.g.dart</code> chứa class <code>Provider</code> đầy đủ tương ứng. File này luôn có dòng <code>// GENERATED CODE - DO NOT MODIFY BY HAND</code> — không bao giờ sửa tay, vì lần build sau sẽ ghi đè mất.</li>
+</ul>
+
+<h4 class="subhead">* Dio — gọi API có interceptor, không lặp code xác thực</h4>
+<ul>
+<li><b>Vấn đề cần giải:</b> mọi request tới backend (trừ login) đều cần đính kèm access token vào header. Nếu dùng <code>http</code> package thuần, phải tự thêm header thủ công ở từng nơi gọi API — dễ quên, khó sửa đồng loạt.</li>
+<li><b>Vì sao Dio:</b> có cơ chế <b>interceptor</b> — 1 lớp trung gian chạy trước mọi request. App này dùng đúng 1 <code>AuthInterceptor</code> (core/network) tự đọc token từ secure storage và gắn <code>Authorization: Bearer ...</code> vào mọi request, viết 1 lần, áp dụng cho toàn bộ datasource. Đây là cơ chế thực tế đang chạy (xem luồng 3.3.a) — không phải lý thuyết.</li>
+</ul>
+
+<h4 class="subhead">* go_router — điều hướng gắn liền trạng thái đăng nhập</h4>
+<ul>
+<li><b>Vấn đề cần giải:</b> phải tự động đẩy người dùng về màn Login nếu chưa đăng nhập, và ngược lại đẩy vào Home nếu đã đăng nhập — không để người dùng tự gõ URL vòng qua màn cần bảo vệ.</li>
+<li><b>Vì sao go_router:</b> khai báo toàn bộ route ở 1 chỗ (<code>app_router.dart</code>), có cơ chế <code>redirect</code> chạy lại mỗi khi 1 <code>Listenable</code> báo thay đổi — ghép thẳng với <code>AuthState</code> từ Riverpod qua <code>refreshListenable</code> (chi tiết cơ chế này ở sơ đồ 3.2.c). Không cần tự viết logic "check đăng nhập" lặp lại ở đầu mỗi màn hình.</li>
+</ul>
+
+<h4 class="subhead">* Drift — cache dữ liệu quan hệ (chưa dùng tới)</h4>
+<ul>
+<li><b>Vấn đề dự kiến giải quyết:</b> app SIEM cần xem được alert/log ngay cả khi mất mạng tạm thời, hoặc cache dữ liệu có quan hệ (nguồn ↔ nhiều alert) để không phải gọi lại API liên tục. <code>shared_preferences</code> chỉ hợp với dữ liệu đơn giản dạng key-value (1 cờ bật/tắt), không hợp để lưu danh sách có cấu trúc.</li>
+</ul>
+<p class="why">Hiện <b>chưa thêm vào project</b> — phần đã code (Alerts) mới dừng ở gọi API trực tiếp mỗi lần mở tab, chưa có nhu cầu cache offline. Sẽ thêm khi feature thật sự cần (ví dụ: xem lại Alerts cũ khi mất mạng).</p>
+
+<h4 class="subhead">* Widgetbook — xem thử component độc lập, tách khỏi app thật</h4>
+<ul>
+<li><b>Vấn đề cần giải:</b> nếu sửa 1 component dùng chung (ví dụ <code>AppButton</code>, <code>SourceGroupCard</code>) mà muốn xem kết quả, cách thông thường là chạy cả app thật, đăng nhập, điều hướng tới đúng màn hình chứa nó — chậm và vướng nhiều bước không liên quan tới component đang sửa.</li>
+<li><b>Vì sao Widgetbook:</b> tạo 1 <b>entrypoint riêng</b> (<code>main_widgetbook.dart</code>, hoàn toàn tách khỏi <code>main.dart</code> — không có AuthState, không có backend thật) hiển thị catalog toàn bộ component qua các file <code>*.usecase.dart</code>. Chạy bằng <code>flutter run -t lib/main_widgetbook.dart -d chrome</code>, xem/thử component ngay lập tức mà không cần đăng nhập hay điều hướng.</li>
+</ul>
+<p class="why">Đây là lý do quy tắc 8 (CLAUDE.md) bắt buộc: mỗi component/theme mới phải có 1 use case Widgetbook <b>trước khi</b> ghép vào feature thật — đảm bảo component đã đúng hình dạng/hành vi độc lập trước khi mang vào ngữ cảnh phức tạp hơn. Toàn bộ 21 use case hiện có (mục 2.3) đã pass bước này — nhưng như mục 4.2 cho thấy, pass Widgetbook không đồng nghĩa hết bug hành vi khi ghép vào màn hình thật.</p>
+</div>
+
+<h3 id="p2-3">2.3. Cây thư mục <code>lib/</code> — toàn bộ hiện trạng thật</h3>
+<div class="card">
+<p>Đây là cây thư mục <code>lib/</code> <b>đầy đủ</b> đang có trong project (không lược bớt, không liệt kê file <code>*.g.dart</code> tự sinh bởi <code>build_runner</code>):</p>
+<div class="tree">lib/
+├── main.dart                                    → runApp() bọc ProviderScope, app thật
+├── main_widgetbook.dart                          → entrypoint riêng cho Widgetbook
+│
+├── widgetbook/                                   → use case xem thử — KHÔNG phải code sản xuất
+│   ├── features/auth/login_screen.usecase.dart
+│   ├── theme/theme_showcase.dart + .usecase.dart
+│   └── widgets/                                   → 1 use case cho mỗi component ở shared/widgets/
+│       ├── buttons/app_button.usecase.dart
+│       ├── cards/app_card.usecase.dart
+│       ├── cards/panel_card.usecase.dart
+│       ├── cards/source_group_card.usecase.dart
+│       ├── cards/stat_card.usecase.dart
+│       ├── charts/app_bar_chart.usecase.dart
+│       ├── charts/app_line_chart.usecase.dart
+│       ├── charts/app_pie_chart.usecase.dart      → mới thêm, phục vụ panel severity của Dashboards
+│       ├── chips/app_chip.usecase.dart
+│       ├── inputs/app_text_field.usecase.dart
+│       ├── list_items/alert_list_item.usecase.dart
+│       ├── list_items/log_list_item.usecase.dart
+│       ├── list_items/stacked_card_group.usecase.dart
+│       ├── scaffolds/app_form_scaffold.usecase.dart
+│       ├── scaffolds/app_list_scaffold.usecase.dart
+│       ├── scaffolds/app_scaffold.usecase.dart
+│       ├── search_dialog/search_dialog.usecase.dart
+│       ├── states/empty_state_view.usecase.dart
+│       ├── states/error_state_view.usecase.dart
+│       ├── states/loading_indicator.usecase.dart
+│       ├── states/rich_empty_state.usecase.dart
+│       └── tables/app_data_table.usecase.dart
+│
+├── app/
+│   ├── app.dart                                  → MaterialApp.router, AppTheme.light/dark
+│   └── router/
+│       ├── app_router.dart                       → GoRouter + StatefulShellRoute (4 tab) + redirect
+│       └── route_names.dart                      → /login, / (home), /alerts, /dashboards, /reports
+│
+├── core/                                          → hạ tầng kỹ thuật, KHÔNG chứa UI
+│   ├── auth/
+│   │   ├── auth_state.dart                       → AuthInitial/Authenticated/Unauthenticated
+│   │   └── auth_controller.dart                  → sở hữu AuthState, gọi AuthRepository
+│   ├── config/
+│   │   ├── app_config.dart                       → apiBaseUrl (10.0.2.2:3000 cho dev)
+│   │   └── app_config_provider.dart
+│   ├── network/
+│   │   ├── api_client.dart                       → Provider tạo Dio dùng chung toàn app
+│   │   └── auth_interceptor.dart                 → tự gắn Bearer token vào mọi request
+│   └── storage/
+│       └── secure_token_storage.dart             → đọc/ghi/xóa token qua flutter_secure_storage
+│
+├── shared/
+│   ├── theme/
+│   │   ├── app_colors.dart                       → màu seed gốc (Material 3)
+│   │   ├── app_theme.dart                        → AppTheme.light / .dark
+│   │   ├── app_spacing.dart                       → design token khoảng cách
+│   │   └── app_radius.dart                        → design token bo góc
+│   ├── widgets/                                   → 19 component dùng chung, mỗi loại 1 thư mục con
+│   │   ├── bottom_navbar/app_bottom_navbar_scaffold.dart
+│   │   ├── placeholder_screen/under_development_screen.dart
+│   │   ├── buttons/app_button.dart
+│   │   ├── inputs/app_text_field.dart
+│   │   ├── cards/                                 → app_card, panel_card, stat_card, source_group_card
+│   │   ├── chips/app_chip.dart
+│   │   ├── tables/app_data_table.dart
+│   │   ├── charts/                                → app_bar_chart, app_line_chart, app_pie_chart (fl_chart) — mới thêm cho Dashboards
+│   │   ├── list_items/                            → alert_list_item, log_list_item, stacked_card_group
+│   │   ├── search_dialog/search_dialog.dart
+│   │   ├── states/                                → loading_indicator, empty/error/rich_empty_state
+│   │   └── scaffolds/                             → app_scaffold, app_list_scaffold, app_form_scaffold
+│   └── models/
+│       └── user.dart                             → model User dùng chung (auth + dashboard)
+│
+└── features/
+    ├── auth/
+    │   ├── data/
+    │   │   ├── models/login_response.dart
+    │   │   ├── datasources/auth_remote_datasource.dart → gọi Dio thật tới backend
+    │   │   └── repositories/auth_repository.dart  → login() + logout() + hasValidSession()
+    │   └── presentation/
+    │       ├── screens/login_screen.dart          → form email/password
+    │       └── state/login_form_controller.dart
+    ├── home/presentation/screens/home_screen.dart  → tab Home (chào user + logout) — đổi tên
+    │                                                  từ features/dashboard/ (singular) để tránh
+    │                                                  nhầm với features/dashboards/ (plural) thật
+    ├── alerts/                                     → tab Alerts — ĐÃ XONG, đã nối API thật
+    │   ├── data/
+    │   │   ├── models/alert.dart                   → Alert, AlertSeverity (high/medium/low)
+    │   │   ├── models/alert_source_icon.dart        → map loại nguồn → icon theo vai trò
+    │   │   ├── datasources/alerts_remote_datasource.dart → GET /alerts (API thật, hết mock)
+    │   │   └── repositories/alerts_repository.dart
+    │   └── presentation/
+    │       ├── screens/alerts_screen.dart          → filter chip + StackedCardGroup + search
+    │       ├── screens/alert_detail_screen.dart    → chi tiết 1 alert
+    │       └── state/alerts_controller.dart        → AsyncNotifier, lọc + group theo nguồn
+    ├── dashboards/                                  → tab Dashboards — ĐÃ XONG, đã nối API thật
+    │   ├── data/
+    │   │   ├── models/dashboard_summary.dart        → DashboardSummary, DailyAlertCount, SourceAlertCount
+    │   │   ├── datasources/dashboards_remote_datasource.dart → GET /dashboards/summary
+    │   │   └── repositories/dashboards_repository.dart
+    │   └── presentation/
+    │       ├── screens/dashboards_screen.dart       → 4 panel: pie/bar/line/table
+    │       └── state/dashboards_controller.dart     → FutureProvider (chỉ đọc, không filter)
+    └── reports/presentation/screens/reports_screen.dart       → tab Reports (placeholder)</div>
+<p><b>4 quy tắc trọng tâm</b> (đủ để hiểu kiến trúc khi trình bày):</p>
+<ol>
+<li><code>core/auth/</code> chỉ chứa logic (AuthService, AuthState) — <b>không</b> đặt UI. Toàn bộ giao diện đăng nhập nằm ở <code>features/auth/presentation/</code>.</li>
+<li>Mọi instance dùng chung (Dio, token storage...) expose qua Riverpod <code>Provider</code> ngay trong module sở hữu nó — nơi khác <code>ref.watch</code>, không tự khởi tạo lại.</li>
+<li><b>Repository là lớp duy nhất được gọi từ UI/state</b> — không gọi thẳng datasource từ presentation.</li>
+<li>Thứ tự dựng UI bắt buộc: <b>theme/token → component dùng chung → ghép màn hình</b>. Không hardcode số/màu trong component.</li>
+</ol>
+</div>
+
+<h3 id="p2-4">2.4. Vì sao không có file <code>.ini</code>/<code>.config</code> trong <code>lib/</code>?</h3>
+<div class="card">
+<p><b>Mục đích thường thấy của <code>.ini</code>/<code>.config</code></b> (PHP, .NET, C/C++ native...): file text riêng nằm cạnh chương trình đã biên dịch, chương trình <b>tự mở ra đọc lúc đang chạy</b> (runtime) — gồm các vai trò quen thuộc: khai báo dependency, cấu hình theo môi trường (base URL, timeout...), connection string tới database, transform cấu hình theo môi trường build (debug/release), version/tên app, quyền/permission.</p>
+<p>Đổi lại: đổi giá trị không cần build lại app, nhưng gõ sai tên key chỉ phát hiện lúc chạy, có khi không phát hiện luôn.</p>
+<p>Dart chọn ngược lại: cấu hình viết bằng <b>code Dart có kiểu dữ liệu</b> (<code>lib/core/config/app_config.dart</code>), trình biên dịch "đóng băng" giá trị vào app lúc <code>flutter build</code> — gõ sai field báo lỗi ngay lúc build, đổi lại muốn đổi giá trị phải build lại.</p>
+<div class="tree">// lib/core/config/app_config.dart — đây là "config.ini" của project này
+class AppConfig {
+  final String apiBaseUrl;
+  static const AppConfig dev = AppConfig(apiBaseUrl: 'http://10.0.2.2:3000');
+}</div>
+
+<p><b>Đối chiếu từng vai trò của <code>.ini</code>/<code>.config</code> với file/thư mục tương ứng trong project này:</b></p>
+<table>
+<tr><th>Vai trò của <code>.ini</code> / <code>.config</code></th><th>Tương đương trong project này</th></tr>
+<tr><td>Khai báo dependency</td><td><code>pubspec.yaml</code></td></tr>
+<tr><td>Cấu hình theo môi trường: base URL, timeout...</td><td><code>lib/core/config/app_config.dart</code> (<code>AppConfig.dev</code>, sau này thêm <code>.staging</code>/<code>.prod</code>)</td></tr>
+<tr><td>Connection string tới database</td><td><b>Không có trong app</b> (app không chạm DB) — tương đương thật nằm ở backend: <code>v2-mobileapp-backend/.env</code> (<code>DATABASE_URL=...</code>)</td></tr>
+<tr><td>Transform theo môi trường (vd <code>Web.Debug.config</code> → <code>Web.Release.config</code> của .NET)</td><td><code>ios/Flutter/Debug.xcconfig</code> / <code>Release.xcconfig</code> — file <b>gần khái niệm <code>.config</code> nhất</b> trong toàn project, xem giải thích dưới</td></tr>
+<tr><td>Cấu hình version/tên app/build</td><td>Tách ra 3 nơi theo nền tảng: <code>pubspec.yaml</code> (<code>version:</code>), <code>android/app/build.gradle</code> (<code>applicationId</code>), <code>ios/Runner/Info.plist</code></td></tr>
+<tr><td>Quyền/permission ứng dụng</td><td><code>AndroidManifest.xml</code> + <code>Info.plist</code> (XML/plist, không phải <code>.ini</code>, nhưng đúng vai trò)</td></tr>
+</table>
+<p class="why">File thật sự gần khái niệm <code>.config</code> nhất trong toàn project: <code>ios/Flutter/Debug.xcconfig</code> / <code>Release.xcconfig</code> — định dạng <code>key=value</code>, đọc bởi công cụ build (Xcode) lúc build, không phải bởi code Dart. Đây chính là cơ chế tương đương <code>Web.Debug.config</code>/<code>Web.Release.config</code> từng làm trong .NET, chỉ khác là vận hành cho project native <code>ios/</code>, tách biệt hoàn toàn khỏi <code>lib/</code> (đúng quy tắc 7 CLAUDE.md).</p>
+</div>
+
+<h3 id="p2-5">2.5. Pipeline xây dựng 1 feature mới (bắt buộc theo đúng thứ tự)</h3>
+<div class="card">
+<p>Áp dụng cho <b>mọi feature</b> — không nhảy thẳng vào code UI khi chưa xong bước 1–2:</p>
+<div class="tree">1. Chốt kiến trúc + stack + cây thư mục   → đã xong 1 lần cho toàn app
+2. Thảo luận chức năng                    → feature cho làm được gì, phạm vi tới đâu
+                                             (KHÔNG suy luận từ ảnh tham khảo/component có sẵn)
+3. Xác định màn hình cần có                → dựa trên bước 2, không đoán theo giao diện
+4. Đối chiếu danh mục component            → shared/widgets/ đã đủ chưa
+5. Xây dựng màn hình thật                  → model → datasource → repository
+                                             → state/controller → UI ghép component có sẵn</div>
+<p class="why">Bài học rút ra: 18 component ban đầu được code dựa theo ảnh tham khảo <b>trước</b> khi thảo luận chức năng kỹ — đối chiếu lại vẫn khớp gần hoàn toàn, nhưng không phải thứ tự nên lặp lại. Feature <b>Alerts</b> là ví dụ đầu tiên làm đúng thứ tự 5 bước này từ đầu.</p>
+</div>
+
+<h2 id="p3"><span class="num">III.</span>Các luồng dữ liệu chính</h2>
+
+<h3 id="p3-1">3.1. Nguyên tắc chung: luồng nào cũng đi qua đúng 4 lớp</h3>
+<div class="card">
+<p>Mọi luồng dữ liệu trong app — dù là đăng nhập hay xem Alerts — đều đi qua đúng thứ tự 4 lớp cố định (quy tắc kiến trúc ở Phần II.3), không lớp nào được nhảy cóc lớp nào:</p>
+<div class="flow">UI (screen)  →  State/Controller (Riverpod)  →  Repository  →  Remote Datasource (Dio)  →  Backend</div>
+<p class="why">UI không bao giờ gọi thẳng Datasource; State không bao giờ tự gọi Dio. Đây là lý do khi đổi từ mock sang API thật (như Alerts vừa làm), chỉ cần sửa đúng 1 file Datasource — Controller, Repository, UI không đổi gì.</p>
+</div>
+
+<h3 id="p3-2">3.2. Luồng đăng nhập</h3>
+
+<h4 class="subhead">3.2.a. Đăng nhập thành công</h4>
+<div class="card">
+<div class="flow">LoginScreen (nhập email/password, bấm nút)
+  → LoginFormController.submit()                    [state riêng: isSubmitting, errorMessage]
+    → AuthController.login()                         [core/auth — sở hữu AuthState toàn app]
+      → AuthRepository.login()                        [lớp duy nhất được gọi từ state/UI]
+        → AuthRemoteDatasource.login()                 [gọi Dio: POST /auth/login]
+          → Backend: so bcrypt.compare(), query Postgres bảng users
+          ← trả {accessToken, refreshToken, user}
+        → SecureTokenStorage.saveTokens()               [lưu 2 token vào bộ nhớ mã hóa]
+      ← trả về User
+    → AuthState chuyển thành AuthAuthenticated(user)
+  → GoRouter (refreshListenable lắng nghe AuthState) tự redirect sang "/"
+→ DashboardScreen hiển thị "Xin chào, {user.name}"</div>
+</div>
+
+<h4 class="subhead">3.2.b. Đăng nhập sai / lỗi mạng</h4>
+<div class="card">
+<div class="flow">AuthRemoteDatasource ném DioException (401 "Sai email hoặc mật khẩu", hoặc lỗi kết nối)
+  → LoginFormController bắt lỗi, đọc message thật từ response backend
+  → hiển thị lên UI, KHÔNG đổi AuthState (vẫn ở màn login)</div>
+</div>
+
+<h4 class="subhead">3.2.c. Sơ đồ: AuthState quyết định màn hình như thế nào</h4>
+<div class="card">
+<p>Điểm mấu chốt: <b>AuthController là nơi duy nhất tạo ra AuthState</b>, <b>GoRouter.redirect() là nơi duy nhất đọc nó</b> để chọn màn hình — hai bên chỉ nói chuyện qua đúng 1 sợi dây: <code>refreshListenable</code>.</p>
+
+<figure>
+<svg viewBox="0 0 1000 760" role="img" aria-label="Sơ đồ AuthController phát ra AuthState, refreshListenable báo cho GoRouter chạy lại redirect, redirect lặp cho tới khi trả về null rồi mới chọn màn hình LoginScreen hoặc DashboardScreen" style="max-width:100%;height:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
+<defs>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+  </marker>
+</defs>
+<style>
+  text{ fill:currentColor; font-size:12px }
+  .lbl{ font-size:11px; fill:currentColor; opacity:.75 }
+  .hd{ font-size:12.5px; font-weight:700 }
+  .box{ fill:none; stroke:currentColor; stroke-width:1.4 }
+  .arr{ fill:none; stroke:currentColor; stroke-width:1.4; marker-end:url(#ar) }
+  .arrAccent{ fill:none; stroke:#5b9dff; stroke-width:1.8; marker-end:url(#ar) }
+</style>
+
+<rect class="box" x="20" y="20" width="290" height="150" rx="8"/>
+<text class="hd" x="34" y="42">AuthController</text>
+<text class="lbl" x="34" y="60">core/auth/auth_controller.dart</text>
+<text x="34" y="86">login() thành công</text>
+<text x="34" y="106">→ state = AuthAuthenticated(user)</text>
+<text x="34" y="130">logout() / chưa có token</text>
+<text x="34" y="150">→ state = AuthUnauthenticated()</text>
+
+<rect class="box" x="20" y="210" width="290" height="140" rx="8"/>
+<text class="hd" x="34" y="232">AuthState (sealed class)</text>
+<circle cx="45" cy="256" r="4" fill="currentColor"/>
+<text x="58" y="260">AuthInitial — chưa xác định</text>
+<circle cx="45" cy="284" r="4" fill="currentColor"/>
+<text x="58" y="288">AuthUnauthenticated</text>
+<circle cx="45" cy="312" r="4" fill="#5b9dff"/>
+<text x="58" y="316">AuthAuthenticated(user)</text>
+<text class="lbl" x="34" y="338">chỉ 3 giá trị này tồn tại</text>
+
+<line class="arr" x1="165" y1="170" x2="165" y2="206"/>
+
+<line class="arrAccent" x1="310" y1="280" x2="450" y2="280"/>
+<text class="lbl" x="315" y="245">ref.listen(authControllerProvider)</text>
+<text class="lbl" x="315" y="260">→ notifyListeners()</text>
+
+<rect class="box" x="450" y="290" width="180" height="90" rx="8" stroke="#5b9dff"/>
+<text class="hd" x="464" y="316" fill="#5b9dff">_AuthRefreshNotifier</text>
+<text class="lbl" x="464" y="336">extends ChangeNotifier</text>
+<text class="lbl" x="464" y="356">gắn vào refreshListenable</text>
+
+<line class="arrAccent" x1="540" y1="380" x2="540" y2="430"/>
+<text class="lbl" x="550" y="400">báo "có gì đó đổi,</text>
+<text class="lbl" x="550" y="414">chạy lại redirect đi"</text>
+
+<rect class="box" x="360" y="440" width="380" height="170" rx="8"/>
+<text class="hd" x="374" y="462">GoRouter.redirect(context, state)</text>
+<text class="lbl" x="374" y="480">app_router.dart — chạy LẶP LẠI</text>
+<text x="374" y="504">đọc: ref.read(authControllerProvider)</text>
+<text x="374" y="526">so: state.matchedLocation == '/login' ?</text>
+<text x="374" y="550">Initial → null (đứng yên)</text>
+<text x="374" y="568">Unauthenticated → null / '/login'</text>
+<text x="374" y="586">Authenticated → '/' / null</text>
+
+<path class="arr" d="M 740 480 C 850 480, 850 580, 740 580" />
+<text class="lbl" x="755" y="510">trả về path khác null</text>
+<text class="lbl" x="755" y="526">→ gọi lại redirect</text>
+<text class="lbl" x="755" y="542">với path mới</text>
+
+<line class="arr" x1="550" y1="610" x2="550" y2="650"/>
+<text class="lbl" x="410" y="632">trả về null → dừng, tra routes[]</text>
+
+<rect class="box" x="380" y="660" width="160" height="42" rx="8"/>
+<text x="400" y="686">LoginScreen</text>
+<rect class="box" x="600" y="660" width="180" height="42" rx="8" stroke="#5b9dff"/>
+<text x="620" y="686" fill="#5b9dff">DashboardScreen</text>
+<line class="arr" x1="550" y1="650" x2="480" y2="660"/>
+<line class="arrAccent" x1="550" y1="650" x2="670" y2="660"/>
+<text class="lbl" x="360" y="650">null lúc ở '/login'</text>
+<text class="lbl" x="600" y="650">null lúc ở '/'</text>
+
+</svg>
+<figcaption>AuthController là nguồn duy nhất phát sinh AuthState. redirect() tự gọi lại chính nó mỗi khi trả về path khác null, cho tới khi ổn định ở null, rồi GoRouter mới chọn LoginScreen hay DashboardScreen.</figcaption>
+</figure>
+</div>
+
+<h4 class="subhead">3.2.d. Mở lại app sau khi đã từng đăng nhập</h4>
+<div class="card">
+<div class="flow">AuthController.build() → gọi _restoreSession()
+  → AuthRepository.hasValidSession() → đọc access token đã lưu trong secure storage
+  → nếu KHÔNG có token → AuthState = Unauthenticated → GoRouter redirect về /login
+  → nếu CÓ token → giữ Initial (TODO: gọi GET /auth/me để lấy lại User đầy đủ)</div>
+<div class="warn"><b>Còn thiếu:</b> app hiện chỉ kiểm tra "có token hay không", chưa gọi <code>GET /auth/me</code> để khôi phục thông tin User khi mở lại app. Endpoint đã có sẵn ở backend, chỉ chưa được gọi từ phía app — xem Phần IV.</div>
+</div>
+
+<h3 id="p3-3">3.3. Luồng xem Alerts (đã nối API thật)</h3>
+
+<h4 class="subhead">3.3.a. Tải danh sách khi mở tab Alerts</h4>
+<div class="card">
+<div class="flow">AlertsScreen mở lên
+  → AlertsController.build()                        [AsyncNotifier<Set&lt;AlertSeverity&gt;>]
+    → AlertsRepository.getAlerts()                    [lớp duy nhất state được gọi]
+      → AlertsRemoteDatasource.getAlerts()             [gọi Dio: GET /alerts]
+        → AuthInterceptor tự gắn "Authorization: Bearer &lt;accessToken&gt;"
+        → Backend: authenticate middleware verify JWT
+          → SELECT * FROM alerts ORDER BY created_at DESC
+        ← trả { alerts: [...] } (JSON)
+      ← List&lt;Alert&gt; (đã parse qua Alert.fromJson)
+    → _allAlerts lưu trong AlertsController, state = {} (bộ lọc rỗng = hiện hết)
+  → AlertsScreen đọc controller.filteredGroups (đã lọc + group theo sourceName)
+    → dựng danh sách SourceGroupCard, mỗi card 1 nguồn</div>
+<p class="why"><b>Điểm quan trọng:</b> <code>AlertsController.state</code> không phải là danh sách alert — nó là <b>bộ lọc severity đang chọn</b>. Danh sách alert gốc giữ riêng trong field <code>_allAlerts</code>, còn <code>filteredAlerts</code>/<code>filteredGroups</code> là getter tính lại mỗi lần build. Quyết định này giúp lọc theo severity không cần gọi lại API.</p>
+</div>
+
+<h4 class="subhead">3.3.b. Lọc theo mức độ (High/Medium/Low)</h4>
+<div class="card">
+<div class="flow">Bấm chip "High" trên AppBar
+  → AlertsController.toggleSeverity(AlertSeverity.high)
+    → state = state ∪ {high}  (hoặc trừ ra nếu đang chọn, logic OR — chọn nhiều severity cùng lúc)
+  → AlertsScreen tự rebuild (ref.watch) → gọi lại filteredGroups (lọc client-side, KHÔNG gọi API lại)
+→ danh sách chỉ còn nhóm/alert khớp severity đã chọn</div>
+</div>
+
+<h4 class="subhead">3.3.c. Tìm kiếm + xem chi tiết 1 alert</h4>
+<div class="card">
+<div class="flow">Bấm icon 🔍 trên AppBar
+  → SearchDialog.show() nhận List&lt;String&gt; dạng "title — sourceName" (đã ghép sẵn)
+  → gõ từ khóa → normalizeForSearch() bỏ dấu + viết thường, lọc client-side
+  → chọn 1 kết quả → Navigator push AlertDetailScreen(alert: alerts[index])
+     [Alert được truyền thẳng qua constructor — KHÔNG gọi lại API, vì
+      GET /alerts đã trả đủ field cho cả list và detail trong 1 lần gọi]</div>
+<p class="why">Quyết định đã chốt: không thêm <code>GET /alerts/:id</code> riêng — giữ đúng kiến trúc hiện tại, ít việc hơn, vì response của <code>GET /alerts</code> đã đủ dữ liệu cho màn chi tiết.</p>
+</div>
+
+<h4 class="subhead">3.3.d. Component đã chốt ghép vào màn hình</h4>
+<div class="card">
+<p>Đây là danh mục <b>đã ghép thật</b> vào <code>AlertsScreen</code>/<code>AlertDetailScreen</code> — không phải danh sách component có sẵn trong catalog, xem đúng vị trí từng cái:</p>
+<table>
+<tr><th>Component</th><th>Vị trí trong màn hình</th></tr>
+<tr><td><code>AppScaffold</code></td><td>Khung nền toàn màn — AppBar "Alerts" + icon 🔍 ở <code>actions</code></td></tr>
+<tr><td><code>AppChip</code></td><td>3 chip lọc High/Medium/Low ngay dưới AppBar, multi-select (logic OR)</td></tr>
+<tr><td><code>StackedCardGroup</code></td><td>Mỗi nhóm nguồn 1 card — thay <code>SourceGroupCard</code> theo quyết định mới nhất (xem 4.2)</td></tr>
+<tr><td><code>LogListItem</code></td><td>Từng dòng log bên trong <code>StackedCardGroup</code> — nhận <code>onTap</code> mở <code>AlertDetailScreen</code></td></tr>
+<tr><td><code>SearchDialog</code></td><td>Mở khi bấm icon 🔍, tìm theo cả <code>title</code> và <code>sourceName</code></td></tr>
+<tr><td><code>LoadingIndicator</code> / <code>ErrorStateView</code> / <code>EmptyStateView</code></td><td>3 trạng thái danh sách, chọn qua <code>switch</code> trên <code>AsyncValue</code></td></tr>
+<tr><td><code>AppButton</code></td><td>Gián tiếp qua nút "Thử lại" bên trong <code>ErrorStateView</code></td></tr>
+</table>
+<p class="why">Chưa dùng trong Alerts: <code>PanelCard</code>, <code>StatCard</code>, mọi component <code>charts/</code>, <code>AppDataTable</code>, <code>RichEmptyState</code> — các component này đang phục vụ Dashboards hoặc chưa có màn hình nào cần tới.</p>
+</div>
+
+<h4 class="subhead">3.3.e. Lỗi khi tải danh sách</h4>
+<div class="card">
+<div class="flow">AlertsRemoteDatasource ném DioException (401 hết hạn token, mất mạng, backend lỗi...)
+  → AlertsController.build() ném lại lỗi → state = AsyncError
+  → AlertsScreen switch sang nhánh AsyncError → hiện ErrorStateView + nút "Thử lại"
+  → bấm "Thử lại" → ref.invalidate(alertsControllerProvider) → build() chạy lại từ đầu</div>
+<p class="why">Đây đúng là lỗi thật đã gặp khi test: access token hết hạn (15 phút) sau khi đăng nhập từ trước, gọi <code>GET /alerts</code> trả 401 → UI hiện đúng thông báo lỗi thay vì crash — xác nhận cơ chế xử lý lỗi hoạt động đúng thiết kế.</p>
+</div>
+
+<h3 id="p3-4">3.4. Luồng xem Dashboards (đã nối API thật)</h3>
+
+<h4 class="subhead">3.4.a. Tải dữ liệu tổng hợp khi mở tab Dashboards</h4>
+<div class="card">
+<div class="flow">DashboardsScreen mở lên
+  → dashboardsSummaryProvider (FutureProvider, không phải AsyncNotifier)
+    → DashboardsRepository.getSummary()                [lớp duy nhất state được gọi]
+      → DashboardsRemoteDatasource.getSummary()          [gọi Dio: GET /dashboards/summary]
+        → AuthInterceptor tự gắn Bearer token (giống mọi request khác)
+        → Backend: 3 câu SQL GROUP BY/COUNT chạy song song
+          (severity breakdown / theo nguồn / theo ngày 7 ngày qua)
+        ← trả JSON đã tổng hợp sẵn: {severityBreakdown, bySource, dailyTrend, topSources}
+      ← DashboardSummary.fromJson(...)
+  → DashboardsScreen đọc đủ 4 field, dựng lần lượt: 3 StatCard + AppPieChart,
+    AppBarChart (theo nguồn), AppLineChart (7 ngày), AppDataTable (top nguồn)</div>
+<p class="why"><b>Khác Alerts ở điểm quan trọng:</b> Dashboards dùng <code>FutureProvider</code> đơn giản, không phải <code>AsyncNotifier</code> — vì không có tương tác nào làm đổi state sau khi tải xong (không filter, không toggle). Toàn bộ 4 panel chỉ hiển thị đúng những gì backend trả về, không tự tính toán gì thêm ở tầng app — đúng tinh thần "Dashboards chỉ XEM" đã chốt ở Phần I.</p>
+</div>
+
+<h4 class="subhead">3.4.b. Vì sao tính toán ở backend, không ở app</h4>
+<div class="card">
+<p>Quyết định đã chốt qua thảo luận (không phải mặc định): backend tính sẵn severity breakdown/group theo nguồn/xu hướng theo ngày bằng SQL, trả JSON đã tổng hợp — app chỉ vẽ lại đúng số liệu nhận được, không tự <code>groupBy</code>/<code>count</code> lại từ danh sách alert thô.</p>
+<p class="why">Lý do: nếu app tự tính, logic thống kê sẽ nằm rải rác ở 2 nơi (app tự tính cho Dashboards, backend tính cho các mục đích khác sau này) — dễ lệch kết quả. Đặt ở backend còn cho phép tính trên toàn bộ dữ liệu thật trong DB, không giới hạn bởi số lượng alert app đã tải về.</p>
+</div>
+
+<h4 class="subhead">3.4.c. Component đã chốt ghép vào màn hình</h4>
+<div class="card">
+<p>4 panel, đúng thứ tự xuất hiện trên <code>DashboardsScreen</code> (trong 1 <code>ListView</code> duy nhất, không phải <code>GridView</code>):</p>
+<table>
+<tr><th>Component</th><th>Panel / Vị trí</th><th>Nguồn dữ liệu</th></tr>
+<tr><td><code>AppScaffold</code></td><td>Khung nền toàn màn — AppBar "Dashboards", không có action nào (không có 🔍, khác Alerts)</td><td>—</td></tr>
+<tr><td><code>StatCard</code> ×3</td><td>Hàng đầu tiên — 3 ô High/Medium/Low nằm ngang</td><td><code>summary.severityBreakdown</code></td></tr>
+<tr><td><code>PanelCard</code> + <code>AppPieChart</code></td><td>Panel "Tỷ lệ theo mức độ"</td><td><code>summary.severityBreakdown</code> (cùng dữ liệu StatCard, khác cách trình bày)</td></tr>
+<tr><td><code>PanelCard</code> + <code>AppBarChart</code></td><td>Panel "Cảnh báo theo nguồn"</td><td><code>summary.bySource</code></td></tr>
+<tr><td><code>PanelCard</code> + <code>AppLineChart</code></td><td>Panel "Xu hướng cảnh báo" (7 ngày qua)</td><td><code>summary.dailyTrend</code></td></tr>
+<tr><td><code>PanelCard</code> + <code>AppDataTable</code></td><td>Panel "Top nguồn cảnh báo"</td><td><code>summary.topSources</code></td></tr>
+<tr><td><code>LoadingIndicator</code> / <code>ErrorStateView</code></td><td>2 trạng thái đầu màn hình — không có <code>EmptyStateView</code> vì Dashboards không có khái niệm "danh sách rỗng"</td><td>—</td></tr>
+</table>
+<p class="why"><code>PanelCard</code> dùng lại đúng 1 component cho cả 3 panel biểu đồ + panel bảng — chỉ khác <code>child</code> truyền vào, đúng tinh thần "component dùng chung, không viết riêng cho từng panel".</p>
+</div>
+
+<h2 id="p4"><span class="num">IV.</span>Trạng thái hiện tại</h2>
+
+<h3 id="p4-1">4.1. Đã xong / còn thiếu</h3>
+<div class="card">
+<table>
+<tr><th>Hạng mục</th><th>Trạng thái</th></tr>
+<tr><td>Đăng nhập qua backend + database thật</td><td><span class="badge done">Đã xong</span></td></tr>
+<tr><td>Lưu token vào secure storage</td><td><span class="badge done">Đã xong</span></td></tr>
+<tr><td>Redirect tự động theo trạng thái đăng nhập (go_router)</td><td><span class="badge done">Đã xong</span></td></tr>
+<tr><td>19 component + 3 layout UI dùng chung</td><td><span class="badge done">Đã xong</span> — có use case Widgetbook, xác nhận trực quan không lỗi layout</td></tr>
+<tr><td><code>AppPieChart</code> (biểu đồ tròn — phục vụ panel severity của Dashboards)</td><td><span class="badge done">Đã xong</span> — xác nhận render đúng qua Chrome DevTools MCP</td></tr>
+<tr><td><code>AppBarChart</code>/<code>AppLineChart</code>: thêm trục Y + nhãn ngày + tooltip số liệu</td><td><span class="badge done">Đã xong</span> — bản đầu không hiện số liệu/chú thích, đã bổ sung</td></tr>
+<tr><td>Tab <code>Home</code>: đổi tên code từ <code>features/dashboard/</code> (singular) sang <code>features/home/</code></td><td><span class="badge done">Đã xong</span> — tránh nhầm lẫn với <code>features/dashboards/</code> (plural) thật</td></tr>
+<tr><td><b>Alerts</b>: màn hình, filter, search, group theo nguồn</td><td><span class="badge done">Đã xong</span> — test trên emulator thật</td></tr>
+<tr><td><b>Alerts</b>: nối API thật (bảng <code>alerts</code>, seed data, <code>GET /alerts</code>)</td><td><span class="badge done">Đã xong</span></td></tr>
+<tr><td><b>Alerts</b>: icon theo vai trò nguồn (Firewall/SIEM/WAF/NAC/Antivirus khác nhau)</td><td><span class="badge done">Đã xong</span> — trước đó mọi nguồn dùng chung 1 icon</td></tr>
+<tr><td><b>Alerts</b>: đổi <code>SourceGroupCard</code> → <code>StackedCardGroup</code>, đơn giản hóa lúc thu gọn</td><td><span class="badge done">Đã xong</span> — xem 4.2</td></tr>
+<tr><td><b>Dashboards</b>: 4 panel (severity/nguồn/xu hướng 7 ngày/top nguồn) + nối API thật</td><td><span class="badge done">Đã xong</span> — <code>GET /dashboards/summary</code>, backend tính sẵn</td></tr>
+<tr><td>Màn đăng ký (register) trong app</td><td><span class="badge mock">Chưa làm</span> — endpoint backend đã có, chỉ chưa có UI</td></tr>
+<tr><td>Khôi phục thông tin User khi mở lại app (gọi <code>/auth/me</code>)</td><td><span class="badge mock">Chưa làm</span> — mới chỉ kiểm tra "có token hay không"</td></tr>
+<tr><td>Tự động refresh accessToken khi hết hạn (dùng refreshToken)</td><td><span class="badge mock">Chưa làm</span> — <code>AuthInterceptor</code> mới chỉ gắn token, chưa xử lý refresh khi 401</td></tr>
+<tr><td>Revoke refreshToken khi logout (phía backend)</td><td><span class="badge mock">Chưa làm</span> — logout hiện chỉ xóa token phía client</td></tr>
+<tr><td>Drift (cache dữ liệu quan hệ), shared_preferences</td><td><span class="badge mock">Chưa thêm</span> — chưa có feature nào cần tới</td></tr>
+</table>
+<div class="warn"><b>Rủi ro đã biết, chưa phải bug:</b> access token sống 15 phút, chưa có cơ chế tự refresh — nếu người dùng để app mở quá 15 phút không thao tác rồi bấm vào Alerts, sẽ gặp lỗi 401 và phải đăng nhập lại thủ công (đã tái hiện đúng trường hợp này khi test, xem 3.3.d). Đây là hạng mục ưu tiên tiếp theo nếu muốn dùng thật.</div>
+</div>
+
+<h3 id="p4-2">4.2. Bug phát hiện qua test thật trên emulator (đã sửa)</h3>
+<div class="card">
+<p>Các bug dưới đây <b>không thể phát hiện bằng <code>flutter analyze</code>/<code>flutter test</code></b> — chỉ lộ ra khi bấm/gõ thật trên thiết bị. Đây là lý do bước 5 (xây dựng + kiểm thử thật) trong pipeline (Phần II.5) không thể bỏ qua dù đã pass Widgetbook + phân tích tĩnh.</p>
+<table>
+<tr><th>Vấn đề</th><th>Cách sửa</th></tr>
+<tr><td><code>SearchDialog</code> không bỏ dấu tiếng Việt (gõ "quet" không khớp "quét"), chỉ tìm theo <code>title</code></td><td>Thêm <code>normalizeForSearch()</code> ngay trong <code>search_dialog.dart</code> (sửa ở component dùng chung, không chỉ riêng Alerts) — áp dụng cho mọi nơi dùng <code>SearchDialog</code> sau này. <code>AlertsScreen</code> ghép thêm <code>sourceName</code> vào chuỗi hiển thị để tìm được cả theo nguồn.</td></tr>
+<tr><td><code>StackedCardGroup</code>: bấm vào nhóm lúc thu gọn không mở rộng được — <code>LogListItem</code> con có <code>onTap</code> riêng "cướp" sự kiện tap khỏi <code>GestureDetector</code> cha</td><td>Đổi thiết kế: nút mở/thu gọn tường minh ở header (label + icon mũi tên), không còn dùng cả card làm vùng bấm — log con luôn nhận <code>onTap</code> riêng, không còn xung đột hit-test.</td></tr>
+<tr><td><code>StackedCardGroup</code>: thử nghiệm hiệu ứng "xếp chồng lệch nhau" (giống notification iOS) không hiển thị nhất quán — có nhóm lộ mép rõ, có nhóm (NAC) hoàn toàn không lộ gì dù cùng công thức</td><td>Gốc rễ: khoảng lệch giữa các lớp (10px) quá nhỏ so với chiều cao thật của <code>LogListItem</code> có <code>subtitle</code> dài (~110-140px) — lớp trên gần như che kín lớp dưới. Đã thử tăng offset + bù trừ scale bằng công thức, vẫn không ổn định giữa các nhóm khác chiều cao. <b>Quyết định cuối:</b> bỏ hẳn hiệu ứng xếp chồng — lúc thu gọn chỉ hiện đúng 1 log mới nhất (che kín), số lượng còn lại hiện ngay trong header dạng <code>"NAC - Kiểm soát truy cập mạng (4)"</code>.</td></tr>
+</table>
+<p class="why">Công cụ dùng để test thật: <code>adb</code> (Android Debug Bridge) — chụp màn hình (<code>adb shell screencap</code>) và mô phỏng tap/gõ phím trực tiếp trên emulator, không cần Chrome DevTools (chỉ dùng được cho web).</p>
+</div>
+
+<h2 id="p5"><span class="num">V.</span>Hướng dẫn chạy thử</h2>
+
+<h3 id="p5-1">5.1. Chạy backend (bắt buộc chạy trước, mọi luồng đều cần)</h3>
+<div class="card">
+<ol>
+<li><code>cd v2-mobileapp-backend</code></li>
+<li><code>npm install</code> (chỉ cần lần đầu)</li>
+<li><code>npm run migrate</code> (chỉ cần lần đầu — tạo bảng <code>users</code> + <code>alerts</code> trên Neon)</li>
+<li><code>npm run seed:alerts</code> (chỉ cần lần đầu, hoặc khi muốn reset lại dữ liệu Alerts test — script tự xóa data cũ trước khi seed lại)</li>
+<li><code>npm run dev</code> → server chạy ở <code>http://0.0.0.0:3000</code>, tự restart khi sửa code (nodemon)</li>
+</ol>
+<p class="why"><code>0.0.0.0</code> thay vì <code>localhost</code> để Android emulator (qua địa chỉ đặc biệt <code>10.0.2.2</code>) gọi vào được máy host.</p>
+</div>
+
+<h3 id="p5-2">5.2. Chạy app thật (Android emulator)</h3>
+<div class="card">
+<ol>
+<li>Backend phải đang chạy (mục 5.1) trước khi mở app</li>
+<li><code>flutter emulators --launch Pixel_7</code> (hoặc emulator khác đã tạo)</li>
+<li><code>flutter run</code> tại thư mục <code>v2-mobileapp-development</code> — mặc định chạy <code>lib/main.dart</code>, tức app thật (khác Widgetbook ở 5.3)</li>
+</ol>
+<div class="note">App gọi backend qua <code>http://10.0.2.2:3000</code> — địa chỉ đặc biệt chỉ hiểu được bởi <b>Android emulator</b>, trỏ về <code>localhost</code> của máy chạy emulator đó. Chạy trên máy Android thật (cắm dây) hoặc iOS simulator sẽ KHÔNG gọi được backend qua địa chỉ này — cần đổi <code>AppConfig.dev.apiBaseUrl</code> (<code>lib/core/config/app_config.dart</code>) sang IP LAN thật của máy hoặc domain đã deploy.</div>
+<p><b>Tài khoản test có sẵn:</b></p>
+<table>
+<tr><th>Email</th><th>Mật khẩu</th></tr>
+<tr><td><code>test@example.com</code></td><td><code>password123</code></td></tr>
+</table>
+<p class="why">Tạo qua <code>POST /auth/register</code> bằng curl thủ công — app hiện <b>chưa có màn đăng ký</b>, chỉ có màn đăng nhập.</p>
+<div class="warn"><b>Lưu ý khi demo:</b> access token sống 15 phút. Nếu để app mở quá lâu rồi vào tab Alerts sẽ gặp lỗi 401 (xem 3.3.d, 4.1) — cần đăng xuất/đăng nhập lại để lấy token mới. Nên đăng nhập lại ngay trước khi bắt đầu trình bày phần Alerts.</div>
+</div>
+
+<h3 id="p5-3">5.3. Chạy Widgetbook (xem thử component độc lập, không cần backend/đăng nhập)</h3>
+<div class="card">
+<p>Dùng khi muốn xem/thử riêng 1 component dùng chung (xem lý do ở mục 2.2.b) mà không cần chạy cả app thật — hữu ích khi trình bày phần thiết kế UI/design system tách biệt khỏi phần luồng nghiệp vụ.</p>
+<div class="tree">flutter run -t lib/main_widgetbook.dart -d chrome</div>
+<ul>
+<li>Chạy trên Chrome (web) — nhanh hơn build Android, không cần emulator</li>
+<li>Có thể đổi <code>-d chrome</code> thành thiết bị khác nếu muốn xem trên mobile</li>
+<li>Sau khi <b>thêm hoặc sửa</b> 1 file <code>*.usecase.dart</code>, phải chạy lại <code>dart run build_runner build</code> để cập nhật <code>main_widgetbook.directories.g.dart</code> (file tự sinh, không sửa tay) — nếu không, use case mới sẽ <b>không</b> hiện trong catalog dù đã lưu file</li>
+</ul>
+<p>Giao diện Widgetbook chia 2 phần: cây danh mục bên trái (theo đúng đường dẫn thư mục trong <code>lib/widgetbook/</code>, xem mục 2.3) và khung xem trước bên phải — có thể đổi theme sáng/tối, đổi kích thước màn hình giả lập ngay trên UI để kiểm tra responsive.</p>
+<div class="warn"><b>Bẫy lúc setup lần đầu (không gặp lại nếu chỉ thêm use case mới):</b> class <code>WidgetbookApp</code> phải có annotation <code>@widgetbook.App()</code> thì mới sinh được file <code>.directories.g.dart</code>. Vì file đó chưa tồn tại ở lần build đầu tiên, phải tạm comment import + dùng <code>directories: const []</code>, build 1 lần để file được sinh ra, rồi mới mở lại import thật.</div>
+<p class="why">Hiện có <b>21 use case</b> (mục 2.3): 19 component dùng chung + <code>ThemeShowcase</code> (trưng bảng màu/button/input/card) + <code>LoginScreen</code> (màn hình thật duy nhất có mặt trong catalog). Widgetbook tự đếm ra <b>24 Components • 51 Use-cases</b> ở footer catalog vì nó gộp cả biến thể theo tham số (mỗi use case có thể là nhiều "story" nhỏ) — không phải cùng đơn vị đếm với "component dùng chung" ở đây.</p>
+</div>
+
+<div class="draftnote">
+<b>[Ghi chú bản nháp]</b> Đã xong đủ 5 phần theo dàn ý ban đầu (I–V). Sẵn sàng để rà soát tổng thể trước khi coi là bản hoàn chỉnh.
+</div>
+
+</div>
+</body>
+</html>
